@@ -15,48 +15,47 @@ def is_url(source: str) -> bool:
     except ValueError:
         return False
 
+
 def download_youtube_audio(url: str, output_dir: str) -> str:
     """
-    Downloads audio from a YouTube URL and extracts it as a WAV file.
-    Suppresses verbose terminal logging via yt-dlp's quiet option.
-    Returns the absolute path to the downloaded file.
+    Downloads YouTube audio and converts it to WAV.
     """
     os.makedirs(output_dir, exist_ok=True)
-    
-    # Define options for yt-dlp to download best audio and postprocess to wav
+
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': os.path.join(output_dir, '%(id)s.%(ext)s'),
-        'quiet': False,
-        'no_warnings': False,
-        'verbose': True,
+        'quiet': True,
+        'no_warnings': True,
+        'noplaylist': True,
+
+        # Avoid the YouTube client associated with some 403 errors
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['default', '-web_embedded']
+            }
+        },
+
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'wav',
-            'preferredquality': '192',
         }],
     }
-    
+
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
         filename = ydl.prepare_filename(info)
-        
-        # Postprocessor converts to .wav, so adjust extension
+
         base, _ = os.path.splitext(filename)
         wav_path = base + ".wav"
-        
-        # Fallback verification in case of unexpected naming behavior
+
         if not os.path.exists(wav_path):
-            video_id = info.get('id')
-            for f in os.listdir(output_dir):
-                if f.startswith(video_id) and f.endswith('.wav'):
-                    wav_path = os.path.join(output_dir, f)
-                    break
-                    
-        if not os.path.exists(wav_path):
-            raise FileNotFoundError(f"Failed to find downloaded and converted WAV file for video ID {info.get('id')}")
-            
+            raise FileNotFoundError(
+                f"Downloaded WAV file not found for video ID {info.get('id')}"
+            )
+
         return os.path.abspath(wav_path)
+
 
 def convert_to_wav(input_path: str, output_path: str = None) -> str:
     """
