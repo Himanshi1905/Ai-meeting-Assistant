@@ -1,4 +1,4 @@
-yt-dlp>=2025.1.15
+yt-dlp[default]
 ffmpeg-python>=0.2.0
 openai-whisper>=20240930
 langchain>=0.3.0
