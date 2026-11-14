@@ -3,6 +3,8 @@ import urllib.parse
 import yt_dlp
 
 from pydub import AudioSegment
+AudioSegment.converter = "/usr/bin/ffmpeg"
+AudioSegment.ffprobe = "/usr/bin/ffprobe"
 def is_url(source: str) -> bool:
     """
     Checks if the source string is a valid URL.
