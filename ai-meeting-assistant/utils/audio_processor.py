@@ -2,15 +2,7 @@ import os
 import urllib.parse
 import yt_dlp
 
-# Automatically bootstrap static FFmpeg binaries on Windows/MacOS/Linux if package is installed
-try:
-    import static_ffmpeg
-    static_ffmpeg.add_paths()
-except ImportError:
-    pass
-
 from pydub import AudioSegment
-
 def is_url(source: str) -> bool:
     """
     Checks if the source string is a valid URL.
