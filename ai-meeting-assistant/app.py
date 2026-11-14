@@ -2,10 +2,20 @@ import os
 import sys
 import json
 import time
+import subprocess
 from dotenv import load_dotenv
 from pydub import AudioSegment
 import streamlit as st
+# Install Deno for yt-dlp JavaScript support
+DENO_BIN = os.path.expanduser("~/.deno/bin")
+os.environ["PATH"] = DENO_BIN + os.pathsep + os.environ.get("PATH", "")
 
+if not os.path.exists(os.path.join(DENO_BIN, "deno")):
+    subprocess.run(
+        "curl -fsSL https://deno.land/install.sh | sh",
+        shell=True,
+        check=True
+    )
 # Import utilities
 from utils.audio_processor import process_input, is_url
 from utils.transcriber import transcribe
