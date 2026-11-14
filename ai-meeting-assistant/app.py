@@ -16,6 +16,28 @@ if not os.path.exists(os.path.join(DENO_BIN, "deno")):
         shell=True,
         check=True
     )
+# Install BgUtils PO Token Provider for YouTube
+BGUTIL_DIR = os.path.expanduser("~/bgutil-ytdlp-pot-provider")
+BGUTIL_SERVER = os.path.join(BGUTIL_DIR, "server")
+
+if not os.path.isdir(BGUTIL_DIR):
+    subprocess.run(
+        [
+            "git", "clone",
+            "--depth", "1",
+            "--branch", "2.0.2",
+            "https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git",
+            BGUTIL_DIR
+        ],
+        check=True
+    )
+
+if not os.path.isdir(os.path.join(BGUTIL_SERVER, "node_modules")):
+    subprocess.run(
+        ["deno", "install", "--allow-scripts=npm:canvas", "--frozen"],
+        cwd=BGUTIL_SERVER,
+        check=True
+    )
 # Import utilities
 from utils.audio_processor import process_input, is_url
 from utils.transcriber import transcribe
